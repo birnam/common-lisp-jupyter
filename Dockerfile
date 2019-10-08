@@ -3,8 +3,8 @@ FROM yitzchak/clj-test:latest
 ARG APP_USER=app
 ARG APP_UID=1000
 
-COPY --chown=$APP_USER:$APP_USER . $HOME/common-lisp-jupyter
-COPY --chown=$APP_USER:$APP_USER . $HOME/quicklisp/local-projects/common-lisp-jupyter
+COPY --chown=$APP_UID:$APP_UID . $HOME/common-lisp-jupyter
+COPY --chown=$APP_UID:$APP_UID . $HOME/quicklisp/local-projects/common-lisp-jupyter
 
 RUN cd common-lisp-jupyter; ros install ./common-lisp-jupyter.asd; exit 0
 RUN cd common-lisp-jupyter; ros install ./common-lisp-jupyter.asd && \
