@@ -600,6 +600,25 @@
   (:documentation "A condition for identifying a request for kernel shutdown.")
   (:report (lambda (c stream) (declare (ignore c stream)))))
 
+(defun my-debugger (condition me-or-my-encapsulation)
+  (declare (ignore me-or-my-encapsulation))
+  (let ((restarts (compute-restarts condition)))
+    (trivial-backtrace:print-backtrace condition :output *error-output*)
+    (finish-output *error-output*)
+    (do ((res restarts (cdr res))
+         (i 1 (1+ i)))
+        ((null res))
+      (format *standard-output* "~2D: ~A~%" i (car res)))
+    (terpri *standard-output*)
+    (finish-output *standard-output*)
+    (write-string "Choice: " *query-io*)
+    (finish-output *query-io*)
+    (invoke-restart-interactively (nth (1- (read)) restarts))))
+
+(defmacro debugging-errors (&body body)
+  `(let ((*debugger-hook* #'my-debugger))
+     ,@body))
+
 (defmacro handling-errors (&body body)
   "Macro for catching any conditions including quit-conditions during code
   evaluation."
